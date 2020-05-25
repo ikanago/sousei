@@ -3,13 +3,13 @@ import pandas as pd
 import numpy as np
 import random
 import os
-import shutil
 
 ############################################################
 #  このスクリプトはデータセットと同じディレクトリに置いて使ってください．
 ############################################################
 
 
+# 画像の中央を切り抜く
 def crop_center(file_path, crop_width, crop_height):
     # https://note.nkmk.me/python-pillow-image-crop-trimming/
     image = Image.open(file_path)
@@ -47,17 +47,16 @@ def create_dataset():
             # 乱数が`test_data_ratio`を超えた場合trainに使う
             if random.random() > test_data_ratio:
                 croped_image.save(os.path.join(train_data_dir, file_name))
-                new_file_name = os.path.join("train_data/", file_name)
                 # ファイル名の6,7文字目が感情値に対応
                 train_dict["Class Label"].append(int(file_name[5:7]))
-                train_dict["File Path"].append(new_file_name)
+                train_dict["File Path"].append(
+                    os.path.join("train_data/", file_name))
             # 乱数が`test_data_ratio`以下の場合testに使う
             else:
                 croped_image.save(os.path.join(test_data_dir, file_name))
-                new_file_name = os.path.join("test_data/", file_name)
                 test_dict["Class Label"].append(int(file_name[5:7]))
-                test_dict["File Path"].append(new_file_name)
-        shutil.rmtree(os.path.join(root_dir, person_dir))
+                test_dict["File Path"].append(
+                    os.path.join("test_data/", file_name))
 
     df = pd.DataFrame(data=train_dict)
     df.to_csv(os.path.join(out_dir, "train_list.csv"), index=False)
