@@ -93,11 +93,12 @@ if __name__ == '__main__':
         n_input = 0
         sum_loss = 0
         perm = np.random.permutation(n_samples)
+        batch_range = min(batchsize, n_samples % batchsize)
         for i in range(0, n_samples, batchsize * 10):  # 高速化のため，ミニバッチ10個につき1個しか学習に用いないことにする
             model.zero_grad()
             x = torch.tensor(load_images(
-                imgfiles, ids=perm[i: i + batchsize], mode=color_mode), device=dev)  # 学習データを読み込む
-            t = torch.tensor(labels[perm[i: i + batchsize]],
+                imgfiles, ids=perm[i: i + batch_range], mode=color_mode), device=dev)  # 学習データを読み込む
+            t = torch.tensor(labels[perm[i: i + batch_range]],
                              device=dev, dtype=torch.long)
             loss = loss_func(model(x), t)
             loss.backward()
