@@ -64,6 +64,7 @@ def create_dataset():
     df.to_csv(os.path.join(out_dir, "test_list.csv"), index=False)
 
 def put_label(n):
+    n = int(n)
     assert(0 <= n < 7)
     if n == 5 or n == 6:
         return 2;
