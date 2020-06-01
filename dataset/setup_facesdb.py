@@ -70,6 +70,8 @@ def put_label(n):
     assert(0 <= n < 7)
     if n == 4 or n == 5 or n == 6:
         return 2;
+    elif n > 2:
+        return n - 1;
     else:
         return n;
 
