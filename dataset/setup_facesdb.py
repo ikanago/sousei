@@ -44,17 +44,20 @@ def create_dataset():
             # 両側の黒い部分を切り取る
             croped_image = crop_center(os.path.join(
                 current_dir, file_name), 480, 480)
+            label = int(file_name[5:7])
+            if label == 3:
+                continue
             # 乱数が`test_data_ratio`を超えた場合trainに使う
             if random.random() > test_data_ratio:
                 croped_image.save(os.path.join(train_data_dir, file_name))
                 # ファイル名の6,7文字目が感情値に対応
-                train_dict["Class Label"].append(put_label(file_name[5:7]))
+                train_dict["Class Label"].append(put_label(label))
                 train_dict["File Path"].append(
                     os.path.join("train_data/", file_name))
             # 乱数が`test_data_ratio`以下の場合testに使う
             else:
                 croped_image.save(os.path.join(test_data_dir, file_name))
-                test_dict["Class Label"].append(put_label(file_name[5:7]))
+                test_dict["Class Label"].append(put_label(label))
                 test_dict["File Path"].append(
                     os.path.join("test_data/", file_name))
 
@@ -64,9 +67,8 @@ def create_dataset():
     df.to_csv(os.path.join(out_dir, "test_list.csv"), index=False)
 
 def put_label(n):
-    n = int(n)
     assert(0 <= n < 7)
-    if n == 5 or n == 6:
+    if n == 4 or n == 5 or n == 6:
         return 2;
     else:
         return n;
