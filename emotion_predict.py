@@ -17,6 +17,16 @@ IMAGE_LIST_EV = DATA_DIR + 'test_list.csv' # 評価用データ
 # 学習済みモデルが保存されているフォルダのパス
 MODEL_DIR = './emotion_models/'
 
+def convert_to_feeling(n):
+    assert(0 <= n < 7)
+    if n == 0:
+        return 'Neutral'
+    elif n == 1:
+        return 'Joy'
+    elif n == 2:
+        return 'Negative'
+    else:
+        return 'Surprise'
 
 # エントリポイント
 if __name__ == '__main__':
@@ -96,12 +106,16 @@ if __name__ == '__main__':
 
         img = np.asarray([load_single_image(in_filepath, mode=color_mode)]) # 入力画像を読み込む
         show_image(img[0], title='input image', mode=color_mode) # 入力画像を表示
+        image_label = int(in_filepath[-10:-8])
+        print('expected result: {0}'.format(convert_to_feeling(image_label)), file=sys.stderr)
         x = torch.tensor(img, device=dev)
         y = model.classify(x)
         y_cpu = y.to('cpu').detach().numpy().copy()
-        print('recognition result: {0}'.format(labelnames[np.argmax(y_cpu)]), file=sys.stderr)
+        recognized_label = int(labelnames[np.argmax(y_cpu)])
+        print('recognition result: {0}'.format(convert_to_feeling(recognized_label)), file=sys.stderr)
         del y_cpu
         del y
         del x
 
     print('', file=sys.stderr)
+

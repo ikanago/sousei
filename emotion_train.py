@@ -82,6 +82,10 @@ if __name__ == '__main__':
     # オプティマイザーの用意
     optimizer = optim.Adam(model.parameters())
 
+    # 最もaccuracyが高かったepochとそのaccuracy
+    best_epoch = 0
+    best_accuracy = 0.0
+
     # 学習処理ループ
     for e in range(epochs):
 
@@ -131,6 +135,9 @@ if __name__ == '__main__':
             del x
             del t
         acc = (n_samples_ev - n_failed) / n_samples_ev
+        if best_accuracy < acc:
+            best_epoch = e
+            best_accuracy = acc
         print('  accuracy = {0:.2f}%'.format(100 * acc), file=sys.stderr)
 
         # 現在のモデルをファイルに自動保存
@@ -143,4 +150,4 @@ if __name__ == '__main__':
     # 最終結果のモデルをファイルに保存
     torch.save(model.to('cpu').state_dict(), model_filepath)
 
-    print('', file=sys.stderr)
+    print('best accuracy: {0}epoch {1}'.format(best_epoch, best_accuracy), file=sys.stderr)
