@@ -14,10 +14,11 @@ def crop_center(file_path, crop_width, crop_height):
     # https://note.nkmk.me/python-pillow-image-crop-trimming/
     image = Image.open(file_path)
     img_width, img_height = image.size
+    offset = random.randint(-3, 3) + 30
     return image.crop(((img_width - crop_width) // 2,
-                       (img_height - crop_height) // 2 + 30,
+                       (img_height - crop_height) // 2 + offset,
                        (img_width + crop_width) // 2,
-                       (img_height + crop_height) // 2 + 30))
+                       (img_height + crop_height) // 2 + offset))
 
 
 def create_dataset():
@@ -33,17 +34,21 @@ def create_dataset():
 
     train_dict = {"Class Label": [], "File Path": []}
     test_dict = {"Class Label": [], "File Path": []}
-    image_length = 250
+    image_length = 240
+    copy_num = 4
     for emotion_id in range(7):
         (train_data_index, test_data_index) = randomly_split_data(emotion_id)
         for person_id_train in train_data_index:
-            file_name_train = "s{0:03d}-{1:02d}_img.bmp".format(person_id_train, emotion_id)
-            file_path = os.path.join(root_dir, "s{0:03d}".format(person_id_train), "bmp", file_name_train)
-            # 両側の黒い部分を切り取る
-            croped_image = crop_center(file_path, image_length, image_length)
-            croped_image.save(os.path.join(train_data_dir, file_name_train))
-            train_dict["Class Label"].append(put_label(emotion_id))
-            train_dict["File Path"].append(os.path.join("train_data/", file_name_train))
+            input_file_train = "s{0:03d}-{1:02d}_img.bmp".format(person_id_train, emotion_id)
+            for i in range(copy_num):
+                file_path = os.path.join(root_dir, "s{0:03d}".format(person_id_train), "bmp", input_file_train)
+                # 両側の黒い部分を切り取る
+                croped_image = crop_center(file_path, image_length, image_length)
+                output_file_train = "s{0:03d}-{1:02d}_{2}img.bmp".format(person_id_train, emotion_id, i)
+                croped_image.save(os.path.join(train_data_dir, output_file_train))
+                train_dict["Class Label"].append(put_label(emotion_id))
+                train_dict["File Path"].append(os.path.join("train_data/", output_file_train))
+            
 
         for person_id_test in test_data_index:
             file_name_test = "s{0:03d}-{1:02d}_img.bmp".format(person_id_test, emotion_id)
