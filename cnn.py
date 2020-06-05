@@ -13,6 +13,7 @@ class myCNN(nn.Module):
     L1_CHANNELS = 4
     L2_CHANNELS = 8
     L3_CHANNELS = 16
+    L4_CHANNELS = 32
     L4_UNITS = 32
 
     # コンストラクタ
