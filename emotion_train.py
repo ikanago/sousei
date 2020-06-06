@@ -20,27 +20,35 @@ IMAGE_LIST_EV = DATA_DIR + 'test_list.csv'  # 評価用データ
 MODEL_DIR = './emotion_models/'
 
 
+
+# コマンドライン引数のパース
+parser = argparse.ArgumentParser(
+    description='CNN Model for MNIST Image Recognition (Training)')
+parser.add_argument('--gpu', '-g', default=-1, type=int,
+                    help='GPU ID (negative value indicates CPU)')
+parser.add_argument('--epochs', '-e', default=10,
+                    type=int, help='number of epochs to learn')
+parser.add_argument('--batchsize', '-b', default=100,
+                    type=int, help='learning minibatch size')
+parser.add_argument('--model', '-m', default='emotion_model.pth',
+                    type=str, help='file path of trained model')
+args = parser.parse_args()
+# デバイスの設定
+dev_str = 'cuda:{0}'.format(
+    args.gpu) if torch.cuda.is_available() and args.gpu >= 0 else 'cpu'
+dev = torch.device(dev_str)
+
 # エントリポイント
 if __name__ == '__main__':
+    max_accuracy = 0.0
+    for i in range(5):
+        accuracy = run()
+        max_accuracy = max(max_accuracy, accuracy)
+        print("{}th max accuracy: {}".format(i, accuracy))
+    print("Max accuracy in 5 attempt: {}".format(max_accuracy))
 
-    # コマンドライン引数のパース
-    parser = argparse.ArgumentParser(
-        description='CNN Model for MNIST Image Recognition (Training)')
-    parser.add_argument('--gpu', '-g', default=-1, type=int,
-                        help='GPU ID (negative value indicates CPU)')
-    parser.add_argument('--epochs', '-e', default=10,
-                        type=int, help='number of epochs to learn')
-    parser.add_argument('--batchsize', '-b', default=100,
-                        type=int, help='learning minibatch size')
-    parser.add_argument('--model', '-m', default='emotion_model.pth',
-                        type=str, help='file path of trained model')
-    args = parser.parse_args()
 
-    # デバイスの設定
-    dev_str = 'cuda:{0}'.format(
-        args.gpu) if torch.cuda.is_available() and args.gpu >= 0 else 'cpu'
-    dev = torch.device(dev_str)
-
+def run():
     # オプション情報の設定・表示
     epochs = max(1, args.epochs)  # 総エポック数（繰り返し回数）
     batchsize = max(1, args.batchsize)  # バッチサイズ
@@ -90,7 +98,7 @@ if __name__ == '__main__':
     for e in range(epochs):
 
         # 現在のエポック番号を表示
-        print('Epoch {0}'.format(e + 1), file=sys.stderr)
+        # print('Epoch {0}'.format(e + 1), file=sys.stderr)
 
         # 損失関数の値が小さくなるように識別器のパラメータを更新
         model.train()
@@ -114,8 +122,8 @@ if __name__ == '__main__':
             del x
 
         # 損失関数の現在値を表示
-        print('  train loss = {0:.4f}'.format(
-            sum_loss / n_input), file=sys.stderr)
+        # print('  train loss = {0:.4f}'.format(
+        #     sum_loss / n_input), file=sys.stderr)
 
         # 評価用データに対する識別精度を計算・表示
         model.eval()
@@ -138,16 +146,16 @@ if __name__ == '__main__':
         if best_accuracy < acc:
             best_epoch = e
             best_accuracy = acc
-        print('  accuracy = {0:.2f}%'.format(100 * acc), file=sys.stderr)
+        # print('  accuracy = {0:.2f}%'.format(100 * acc), file=sys.stderr)
 
         # 現在のモデルをファイルに自動保存
         torch.save(model.to('cpu').state_dict(), MODEL_DIR +
                    'model_ep{0}.pth'.format(e + 1))
         model = model.to(dev)
 
-        print('', file=sys.stderr)
+        # print('', file=sys.stderr)
 
     # 最終結果のモデルをファイルに保存
     torch.save(model.to('cpu').state_dict(), model_filepath)
 
-    print('best accuracy: {0}epoch {1}'.format(best_epoch, best_accuracy), file=sys.stderr)
+    return max_accuracy
