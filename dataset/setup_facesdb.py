@@ -14,11 +14,12 @@ def crop_center(file_path, crop_width, crop_height):
     # https://note.nkmk.me/python-pillow-image-crop-trimming/
     image = Image.open(file_path)
     img_width, img_height = image.size
-    offset = random.randint(-5, 5) + 25
+    horizontal_offset = random.randint(-5, 5) + 25
+    vertical_offset = random.randint(-5, 5)
     return image.crop(((img_width - crop_width) // 2,
-                       (img_height - crop_height) // 2 + offset,
+                       (img_height - crop_height) // 2 + 25,
                        (img_width + crop_width) // 2,
-                       (img_height + crop_height) // 2 + offset))
+                       (img_height + crop_height) // 2 + 25))
 
 
 def create_dataset():
@@ -48,7 +49,6 @@ def create_dataset():
                 croped_image.save(os.path.join(train_data_dir, output_file_train))
                 train_dict["Class Label"].append(put_label(emotion_id))
                 train_dict["File Path"].append(os.path.join("train_data/", output_file_train))
-            
 
         for person_id_test in test_data_index:
             file_name_test = "s{0:03d}-{1:02d}_img.bmp".format(person_id_test, emotion_id)

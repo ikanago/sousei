@@ -38,26 +38,16 @@ dev_str = 'cuda:{0}'.format(
     args.gpu) if torch.cuda.is_available() and args.gpu >= 0 else 'cpu'
 dev = torch.device(dev_str)
 
-# エントリポイント
-if __name__ == '__main__':
-    max_accuracy = 0.0
-    for i in range(5):
-        accuracy = run()
-        max_accuracy = max(max_accuracy, accuracy)
-        print("{}th max accuracy: {}".format(i, accuracy))
-    print("Max accuracy in 5 attempt: {}".format(max_accuracy))
-
-
 def run():
     # オプション情報の設定・表示
     epochs = max(1, args.epochs)  # 総エポック数（繰り返し回数）
     batchsize = max(1, args.batchsize)  # バッチサイズ
     model_filepath = args.model  # 学習結果のモデルの保存先ファイル
-    print('device: {0}'.format(dev_str), file=sys.stderr)
-    print('epochs: {0}'.format(epochs), file=sys.stderr)
-    print('batchsize: {0}'.format(batchsize), file=sys.stderr)
-    print('model file: {0}'.format(model_filepath), file=sys.stderr)
-    print('', file=sys.stderr)
+    # print('device: {0}'.format(dev_str), file=sys.stderr)
+    # print('epochs: {0}'.format(epochs), file=sys.stderr)
+    # print('batchsize: {0}'.format(batchsize), file=sys.stderr)
+    # print('model file: {0}'.format(model_filepath), file=sys.stderr)
+    # print('', file=sys.stderr)
 
     # 画像の縦幅・横幅・チャンネル数の設定
     width = 240  # MNIST文字画像の場合，横幅は 28 pixels
@@ -158,4 +148,14 @@ def run():
     # 最終結果のモデルをファイルに保存
     torch.save(model.to('cpu').state_dict(), model_filepath)
 
-    return max_accuracy
+    return best_accuracy
+
+# エントリポイント
+if __name__ == '__main__':
+    max_accuracy = 0.0
+    attempts = 5
+    for i in range(attempts):
+        accuracy = run()
+        max_accuracy = max(max_accuracy, accuracy)
+        print("{}th max accuracy: {}".format(i, accuracy))
+    print("Max accuracy in {} attempts: {}".format(attempts, max_accuracy))
