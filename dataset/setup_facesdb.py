@@ -47,7 +47,7 @@ def create_dataset():
                 croped_image = crop_center(file_path, image_length, image_length)
                 output_file_train = "s{0:03d}-{1:02d}_{2}img.bmp".format(person_id_train, emotion_id, i)
                 croped_image.save(os.path.join(train_data_dir, output_file_train))
-                train_dict["Class Label"].append(put_label(emotion_id))
+                train_dict["Class Label"].append(emotion_id)
                 train_dict["File Path"].append(os.path.join("train_data/", output_file_train))
 
         for person_id_test in test_data_index:
@@ -56,7 +56,7 @@ def create_dataset():
             # 両側の黒い部分を切り取る
             croped_image = crop_center(file_path, image_length, image_length)
             croped_image.save(os.path.join(test_data_dir, file_name_test))
-            test_dict["Class Label"].append(put_label(emotion_id))
+            test_dict["Class Label"].append(emotion_id)
             test_dict["File Path"].append(os.path.join("test_data/", file_name_test))
 
     df = pd.DataFrame(data=train_dict)
