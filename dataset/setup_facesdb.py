@@ -36,7 +36,7 @@ def create_dataset():
     train_dict = {"Class Label": [], "File Path": []}
     test_dict = {"Class Label": [], "File Path": []}
     image_length = 240
-    copy_num = 6
+    copy_num = 4
     for emotion_id in range(7):
         (train_data_index, test_data_index) = randomly_split_data(emotion_id)
         for person_id_train in train_data_index:
@@ -70,10 +70,10 @@ def randomly_split_data(emotion_id):
         if i != 20 and i != 22:
             person_labels.append(i)
     random.shuffle(person_labels)
-    if emotion_id == 2 or emotion_id == 4 or emotion_id == 5 or emotion_id == 6:
-        return (person_labels[0:6], person_labels[6:9])
-    else:
-        return (person_labels[0:24], person_labels[24:])
+    # if emotion_id == 2 or emotion_id == 4 or emotion_id == 5 or emotion_id == 6:
+    #     return (person_labels[0:6], person_labels[6:9])
+    # else:
+    return (person_labels[0:24], person_labels[24:])
 
 def put_label(n):
     assert(0 <= n < 7)
