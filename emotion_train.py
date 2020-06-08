@@ -83,6 +83,7 @@ def run():
     # 最もaccuracyが高かったepochとそのaccuracy
     best_epoch = 0
     best_accuracy = 0.0
+    close_epoch = 20
 
     # 学習処理ループ
     for e in range(epochs):
@@ -142,6 +143,9 @@ def run():
         torch.save(model.to('cpu').state_dict(), MODEL_DIR +
                    'model_ep{0}.pth'.format(e + 1))
         model = model.to(dev)
+
+        if e - best_epoch > close_epoch:
+            return best_accuracy
 
         # print('', file=sys.stderr)
 

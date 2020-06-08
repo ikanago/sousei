@@ -35,7 +35,7 @@ def create_dataset():
 
     train_dict = {"Class Label": [], "File Path": []}
     test_dict = {"Class Label": [], "File Path": []}
-    image_length = 480
+    image_length = 240
     copy_num = 6
     for emotion_id in range(7):
         (train_data_index, test_data_index) = randomly_split_data(emotion_id)
