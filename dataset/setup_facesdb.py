@@ -1,4 +1,4 @@
-from PIL import Image, ImageOps
+from PIL import Image, ImageOps, ImageEnhance
 import pandas as pd
 import numpy as np
 import random
@@ -29,8 +29,14 @@ def crop_center(file_path, crop_width, crop_height):
                        (img_width + crop_width) // 2,
                        (img_height + crop_height) // 2 + 45))
     
+    # ランダムに画像を左右反転
     if random.random() > 0.5:
-        trimmed_image = ImageOps.flip(trimmed_image)
+        trimmed_image = ImageOps.mirror(trimmed_image)
+
+    # ランダムに明るさを変更
+    # brightness_altered_image = ImageEnhance.Brightness(trimmed_image)
+    # brightness_altered_image = brightness_altered_image.enhance(random.uniform(0.7, 1.3))
+    # return brightness_altered_image
     return trimmed_image
 
 
