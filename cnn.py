@@ -33,8 +33,8 @@ class myCNN(nn.Module):
         self.conv5 = Conv(in_channels=self.L4_CHANNELS, out_channels=self.L5_CHANNELS, kernel_size=30, activation=F.relu)
         self.conv6 = Conv(in_channels=self.L5_CHANNELS, out_channels=self.L6_CHANNELS, kernel_size=30, activation=F.relu)
         self.pool = Pool(method='max')
-        self.w = img_width //  32 # プーリング層を 2 回経由するので，特徴マップの横幅は 1/2^2 = 1/4 となる
-        self.h = img_height // 32 # 縦幅についても同様
+        self.w = img_width //  16 # プーリング層を 2 回経由するので，特徴マップの横幅は 1/2^2 = 1/4 となる
+        self.h = img_height // 16 # 縦幅についても同様
         self.nz = self.w * self.h * self.L5_CHANNELS # 全結合層の直前におけるユニットの総数
         self.fc3 = FC(in_units=self.nz, out_units=self.L6_UNITS, activation=F.relu)
         self.fc4 = FC(in_units=self.L6_UNITS, out_units=out_units, activation=None) # 最終層では一般に活性化関数は入れない
@@ -51,8 +51,8 @@ class myCNN(nn.Module):
         h = self.pool(h)
         h = self.conv4(h)
         h = self.pool(h)
-        h = self.conv5(h)
-        h = self.pool(h)
+        # h = self.conv5(h)
+        # h = self.pool(h)
         h = h.view(h.size()[0], -1) # 平坦化：特徴マップを一列に並べ直す（FC層の直前では必ず必要）
         h = self.fc3(h)
         y = self.fc4(h)

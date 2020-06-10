@@ -4,6 +4,8 @@ import sys
 import argparse
 import pickle
 import numpy as np
+import pandas as pd
+import csv
 import torch
 from cnn import myCNN
 from utils import show_image
@@ -87,11 +89,17 @@ if __name__ == '__main__':
         labels_ev, imgfiles_ev, labeldict, dmy = read_image_list(IMAGE_LIST_EV, DATA_DIR, dic=labeldict) # 評価用データの読み込み
         n_samples_ev = len(imgfiles_ev) # 評価用データの総数
         n_failed = 0
+        # row: expected, col: actual
+        eval_matrix = [[0 for j in range(7)] for i in range(7)]
         for i in range(0, n_samples_ev, batchsize):
-            x = torch.tensor(load_images(imgfiles_ev, ids=np.arange(i, i + batchsize), mode=color_mode), device=dev)
+            offset = min(n_samples_ev, i + batchsize)
+            x = torch.tensor(load_images(imgfiles_ev, ids=np.arange(i, offset), mode=color_mode), device=dev)
             t = labels_ev[i : i + batchsize]
             y = model.classify(x)
             y_cpu = y.to('cpu').detach().numpy().copy()
+            recognized = np.argmax(y_cpu, 1)
+            for j in range(len(t)):
+                eval_matrix[t[j]][recognized[j]] += 1
             n_failed += np.count_nonzero(np.argmax(y_cpu, axis=1) - t)
             del y_cpu
             del y
@@ -99,6 +107,12 @@ if __name__ == '__main__':
             del t
         acc = (n_samples_ev - n_failed) / n_samples_ev
         print('accuracy = {0:.2f}%'.format(100 * acc), file=sys.stderr)
+        for i in range(7):
+            for j in range(7):
+                if i == j:
+                    continue
+                if eval_matrix[i][j] > 3:
+                    print("expected: {} actual: {}".format(i, j))
 
     else:
 

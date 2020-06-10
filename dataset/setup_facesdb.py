@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL import Image, ImageOps
 import pandas as pd
 import numpy as np
 import random
@@ -19,15 +19,19 @@ def crop_center(file_path, crop_width, crop_height):
     vertical_offset = random.randint(-random_offset_width, random_offset_width)
     is_random = True
     if is_random:
-        return image.crop(((img_width - crop_width) // 2 + vertical_offset,
+        trimmed_image = image.crop(((img_width - crop_width) // 2 + vertical_offset,
                             (img_height - crop_height) // 2 + horizontal_offset,
                             (img_width + crop_width) // 2 + vertical_offset,
                             (img_height + crop_height) // 2 + horizontal_offset))
     else:
-        return image.crop(((img_width - crop_width) // 2,
+        trimmed_image = image.crop(((img_width - crop_width) // 2,
                        (img_height - crop_height) // 2 + 45,
                        (img_width + crop_width) // 2,
                        (img_height + crop_height) // 2 + 45))
+    
+    if random.random() > 0.5:
+        trimmed_image = ImageOps.flip(trimmed_image)
+    return trimmed_image
 
 
 def create_dataset(is_split):
@@ -97,6 +101,6 @@ def put_label(n, is_split):
         return n
 
 if __name__ == "__main__":
-    is_split = False
+    is_split = True
     create_dataset(is_split)
     print("Successful.")
