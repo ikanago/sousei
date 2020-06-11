@@ -50,8 +50,8 @@ def run():
     # print('', file=sys.stderr)
 
     # 画像の縦幅・横幅・チャンネル数の設定
-    width = 240  # MNIST文字画像の場合，横幅は 28 pixels
-    height = 240  # MNIST文字画像の場合，縦幅も 28 pixels
+    width = 480  # MNIST文字画像の場合，横幅は 28 pixels
+    height = 480  # MNIST文字画像の場合，縦幅も 28 pixels
     channels = 3  # MNIST文字画像はグレースケール画像なので，チャンネル数は 1
     color_mode = 0 if channels == 1 else 1
 
@@ -88,7 +88,7 @@ def run():
     for e in range(epochs):
 
         # 現在のエポック番号を表示
-        print('Epoch {0}'.format(e + 1), file=sys.stderr)
+        # print('Epoch {0}'.format(e + 1), file=sys.stderr)
 
         # 損失関数の値が小さくなるように識別器のパラメータを更新
         model.train()
@@ -112,7 +112,7 @@ def run():
             del x
 
         # 損失関数の現在値を表示
-        print('  train loss = {0:.4f}'.format(sum_loss / n_input), file=sys.stderr)
+        # print('  train loss = {0:.4f}'.format(sum_loss / n_input), file=sys.stderr)
 
         # 評価用データに対する識別精度を計算・表示
         model.eval()
@@ -135,17 +135,17 @@ def run():
         if best_accuracy < acc:
             best_epoch = e
             best_accuracy = acc
-        print('  accuracy = {0:.2f}%'.format(100 * acc), file=sys.stderr)
+        # print('  accuracy = {0:.2f}%'.format(100 * acc), file=sys.stderr)
 
         # 現在のモデルをファイルに自動保存
-        torch.save(model.to('cpu').state_dict(), MODEL_DIR +
-                   'model_ep{0}.pth'.format(e + 1))
+        # torch.save(model.to('cpu').state_dict(), MODEL_DIR +
+        #            'model_ep{0}.pth'.format(e + 1))
         model = model.to(dev)
 
         # print('', file=sys.stderr)
 
     # 最終結果のモデルをファイルに保存
-    torch.save(model.to('cpu').state_dict(), model_filepath)
+    # torch.save(model.to('cpu').state_dict(), model_filepath)
 
     return (best_epoch, best_accuracy)
 
