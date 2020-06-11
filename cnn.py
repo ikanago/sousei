@@ -35,7 +35,7 @@ class myCNN(nn.Module):
         self.pool = Pool(method='max')
         self.w = img_width //  16 # プーリング層を 2 回経由するので，特徴マップの横幅は 1/2^2 = 1/4 となる
         self.h = img_height // 16 # 縦幅についても同様
-        self.nz = self.w * self.h * self.L5_CHANNELS # 全結合層の直前におけるユニットの総数
+        self.nz = self.w * self.h * self.L4_CHANNELS # 全結合層の直前におけるユニットの総数
         self.fc3 = FC(in_units=self.nz, out_units=self.L6_UNITS, activation=F.relu)
         self.fc4 = FC(in_units=self.L6_UNITS, out_units=out_units, activation=None) # 最終層では一般に活性化関数は入れない
 
