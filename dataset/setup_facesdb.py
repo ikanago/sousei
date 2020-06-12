@@ -1,6 +1,7 @@
 from PIL import Image, ImageOps, ImageEnhance
 import pandas as pd
 import numpy as np
+import argparse
 import random
 import os
 
@@ -10,14 +11,13 @@ import os
 
 
 # 画像の中央を切り抜く
-def crop_center(file_path, crop_width, crop_height):
+def crop_center(file_path, crop_width, crop_height, is_random):
     # https://note.nkmk.me/python-pillow-image-crop-trimming/
     image = Image.open(file_path)
     img_width, img_height = image.size
     random_offset_width = 20
     horizontal_offset = random.randint(-random_offset_width, random_offset_width) + 45
     vertical_offset = random.randint(-random_offset_width, random_offset_width)
-    is_random = True
     if is_random:
         trimmed_image = image.crop(((img_width - crop_width) // 2 + vertical_offset,
                             (img_height - crop_height) // 2 + horizontal_offset,
@@ -30,8 +30,8 @@ def crop_center(file_path, crop_width, crop_height):
                        (img_height + crop_height) // 2 + 45))
     
     # ランダムに画像を左右反転
-    if random.random() > 0.5:
-        trimmed_image = ImageOps.mirror(trimmed_image)
+    # if random.random() > 0.5:
+    #     trimmed_image = ImageOps.mirror(trimmed_image)
 
     # ランダムに明るさを変更
     # brightness_altered_image = ImageEnhance.Brightness(trimmed_image)
@@ -40,7 +40,7 @@ def crop_center(file_path, crop_width, crop_height):
     return trimmed_image
 
 
-def create_dataset(is_split):
+def create_dataset(is_random, is_split):
     working_dir = os.path.dirname(os.path.abspath(__file__))
     root_dir = os.path.join(working_dir, "facesdb")  # カラー画像のデータセット
     # train用のディレクトリとtest用のディレクトリを入れるディレクトリ
@@ -62,7 +62,7 @@ def create_dataset(is_split):
             for i in range(copy_num):
                 file_path = os.path.join(root_dir, "s{0:03d}".format(person_id_train), "bmp", input_file_train)
                 # 両側の黒い部分を切り取る
-                croped_image = crop_center(file_path, image_length, image_length)
+                croped_image = crop_center(file_path, image_length, image_length, is_random)
                 output_file_train = "s{0:03d}-{1:02d}_{2}img.bmp".format(person_id_train, emotion_id, i)
                 croped_image.save(os.path.join(train_data_dir, output_file_train))
                 train_dict["Class Label"].append(put_label(emotion_id, is_split))
@@ -72,7 +72,7 @@ def create_dataset(is_split):
             file_name_test = "s{0:03d}-{1:02d}_img.bmp".format(person_id_test, emotion_id)
             file_path = os.path.join(root_dir, "s{0:03d}".format(person_id_test), "bmp", file_name_test)
             # 両側の黒い部分を切り取る
-            croped_image = crop_center(file_path, image_length, image_length)
+            croped_image = crop_center(file_path, image_length, image_length, is_random)
             croped_image.save(os.path.join(test_data_dir, file_name_test))
             test_dict["Class Label"].append(put_label(emotion_id, is_split))
             test_dict["File Path"].append(os.path.join("test_data/", file_name_test))
@@ -107,6 +107,12 @@ def put_label(n, is_split):
         return n
 
 if __name__ == "__main__":
-    is_split = True
-    create_dataset(is_split)
+    parser = argparse.ArgumentParser(description="データセットをセットアップします")
+    parser.add_argument('--random', '-r', action='store_true', help='ランダムに切り抜き位置をずらします')
+    parser.add_argument('--merge_emotion', '-m', action='store_true', help='感情ラベルを4種類にします')
+    parser.add_argument('--size', '-s', default=240, type=int, help='切り抜いた画像のサイズを指定します')
+    args = parser.parse_args()
+    is_random = args.random
+    is_split = args.merge_emotion
+    create_dataset(is_random, is_split)
     print("Successful.")
