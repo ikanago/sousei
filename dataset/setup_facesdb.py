@@ -111,6 +111,7 @@ if __name__ == "__main__":
     parser.add_argument('--random', '-r', action='store_true', help='ランダムに切り抜き位置をずらします')
     parser.add_argument('--merge_emotion', '-m', action='store_true', help='感情ラベルを4種類にします')
     parser.add_argument('--size', '-s', default=240, type=int, help='切り抜いた画像のサイズを指定します')
+    parser.add_argument('--copy', '-c', default=1, type=int, help='データを何倍に複製するかを指定します')
     args = parser.parse_args()
     is_random = args.random
     is_split = args.merge_emotion
