@@ -50,8 +50,8 @@ def run():
     # print('', file=sys.stderr)
 
     # 画像の縦幅・横幅・チャンネル数の設定
-    width = 480  # MNIST文字画像の場合，横幅は 28 pixels
-    height = 480  # MNIST文字画像の場合，縦幅も 28 pixels
+    width = 240  # MNIST文字画像の場合，横幅は 28 pixels
+    height = 240  # MNIST文字画像の場合，縦幅も 28 pixels
     channels = 3  # MNIST文字画像はグレースケール画像なので，チャンネル数は 1
     color_mode = 0 if channels == 1 else 1
 
